@@ -31,9 +31,9 @@ module.exports = (styledComponentsDict, context, name) => ({
       // styled(Component)``
       if (isStyledFunc(node)) {
         const ancestorScName = node.tag.arguments[0].name;
-        if (!styledComponentsDict[ancestorScName]) return;
-        ({ attrs } = styledComponentsDict[ancestorScName]);
-        ({ tag } = styledComponentsDict[ancestorScName]);
+        if (!styledComponentsDict.get(ancestorScName)) return;
+        ({ attrs } = styledComponentsDict.get(ancestorScName));
+        ({ tag } = styledComponentsDict.get(ancestorScName));
       }
       // styled.div.attrs(...)`` || styled(Component).attrs(...)``
       if (isAttrs(node) || isStyledFuncWithAttrs(node)) {
@@ -43,9 +43,9 @@ module.exports = (styledComponentsDict, context, name) => ({
 
         if (isComponentAttrsCall) {
           const ancestorScName = node.tag.callee.object.arguments[0].name;
-          if (!styledComponentsDict[ancestorScName]) return;
-          attrs = styledComponentsDict[ancestorScName].attrs;
-          tag = styledComponentsDict[ancestorScName].tag;
+          if (!styledComponentsDict.get(ancestorScName)) return;
+          attrs = styledComponentsDict.get(ancestorScName).attrs;
+          tag = styledComponentsDict.get(ancestorScName).tag;
         } else {
           tag = node.tag.callee.object.property?.name;
         }
@@ -95,16 +95,12 @@ module.exports = (styledComponentsDict, context, name) => ({
             })),
         );
       }
-      styledComponentsDict[scName] = { name: scName, attrs, tag };
+      styledComponentsDict.set(scName, { name: scName, tag, attrs });
     }
     // const A = styled.div``
     if (isPlainSTE(node)) {
       tag = node.tag.property.name;
-      styledComponentsDict[scName] = {
-        name: scName,
-        tag,
-        attrs,
-      };
+      styledComponentsDict.set(scName, { name: scName, tag, attrs });
     }
   },
 });

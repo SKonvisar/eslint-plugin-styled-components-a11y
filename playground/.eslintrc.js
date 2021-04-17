@@ -1,9 +1,9 @@
 module.exports = {
-  plugins: ['react', 'styled-components-a11y'],
+  plugins: ['styled-components-a11y'],
   extends: ['eslint-config-airbnb', 'prettier', 'prettier/react', 'plugin:styled-components-a11y/recommended'],
   parserOptions: {
     "ecmaVersion": 2020,
-    parser: 'babel-eslint',
+    parser: '@typescript-eslint/parser',
     sourceType: 'module',
   },
   env: {
