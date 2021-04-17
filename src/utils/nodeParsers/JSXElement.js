@@ -6,7 +6,7 @@ module.exports = (context, styledComponents, rule, name) => ({
     const func = inspectee => name.includes('scope') && context.report(node, inspect(inspectee || node));
     try {
       const originalName = node.openingElement.name.name;
-      const styledComponent = styledComponents[originalName];
+      const styledComponent = styledComponents.get(originalName);
       if (styledComponent) {
         const { tag, attrs } = styledComponent;
         const originalNodeAttr = node.openingElement.attributes;
