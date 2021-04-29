@@ -11,7 +11,7 @@ const ruleNameToTypeDict = require('./ruleNameToTypeDict');
 const extendStyledComponents = require('./extendStyledComponents');
 const StyledComponentsMap = require('./styledComponentsMap');
 
-module.exports = (name) => ({
+module.exports = (name, cache) => ({
   create(context) {
     const nodeParserPath = path.join(__dirname, 'nodeParsers', ruleNameToTypeDict[name]);
     const rule = rules[name];
@@ -26,6 +26,8 @@ module.exports = (name) => ({
 
     const importedModules = {};
     const modulesToParse = {};
+
+    const filename = context.getFilename();
 
     return {
       ImportDeclaration(node) {
@@ -50,8 +52,13 @@ module.exports = (name) => ({
         nodesArray.push(node);
       },
       'Program:exit': () => {
-        extendStyledComponents(styledComponents, modulesToParse, context);
-        const parser = require(nodeParserPath)(context, styledComponents, rule, name);
+        if (!cache.isPathCached(filename)) {
+          console.log(context.getAncestors(), 'not cached');
+          extendStyledComponents(styledComponents, modulesToParse, context);
+          cache.setForPath(filename, styledComponents);
+        }
+        // console.log(cache.getForPath(filename), 'cache.getForPath(filename)');
+        const parser = require(nodeParserPath)(context, cache.getForPath(filename), rule, name);
         nodesArray.forEach((node) => parser[parsedElement](node));
       },
     };
